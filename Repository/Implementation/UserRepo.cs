@@ -47,6 +47,7 @@ namespace Repository.Implementation
             }
         }
 
+        #region Not In Used
         //public bool CreateUser(User user, string roles)
         //{
         //    try
@@ -73,6 +74,7 @@ namespace Repository.Implementation
         //        return false;
         //    }
         //}
+        #endregion
 
         public EmployeeLogin? ValidateUser(string email, string password)
         {
@@ -83,7 +85,7 @@ namespace Repository.Implementation
 
             var user = _db.Users.Include(u => u.Employee).Include(u => u.UserRoleUsers).ThenInclude(ur => ur.Role).FirstOrDefault(u =>
                     u.Employee != null
-                    && u.Employee.EmailAddress == normalizedEmail
+                    && u.Employee.EmployeeCode == normalizedEmail
                     && u.IsActive
                     && u.Employee.IsActive
                     && !u.Employee.IsDeleted);
@@ -91,16 +93,19 @@ namespace Repository.Implementation
             if (user == null)
                 return null;
 
-            if (user.IsLockedOut && user.LockoutEndAt.HasValue && user.LockoutEndAt.Value > DateTime.UtcNow)
-                return null;
+            //if (user.IsLockedOut && user.LockoutEndAt.HasValue && user.LockoutEndAt.Value > DateTime.UtcNow)
+            //    return null;
 
             if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 return null;
 
             return new EmployeeLogin
             {
+                FirstName=user.Employee.FirstName,
+                LastName = user.Employee.LastName,
                 UserName = user.UserName,
                 EmployeeId = user.EmployeeId,
+                RoleId=user.Id,
                 Roles = user.UserRoleUsers
                     .Where(ur => ur.Role != null && ur.Role.IsActive)
                     .Select(ur => ur.Role.Name)

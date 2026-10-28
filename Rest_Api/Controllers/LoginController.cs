@@ -32,12 +32,8 @@ namespace Rest_Api.Controllers
                 DateOfJoinee = request.DateOfJoinee,
                 PassWord = request.PassWord,
                 IsActive = true,
-                CreatedDate = DateTime.UtcNow,
-               
-               
+                CreatedDate = DateTime.UtcNow,    
                 RoleId = request.RoleId
-
-
             };
 
             var created = _userRepo.CreateUser(user);
@@ -47,17 +43,17 @@ namespace Rest_Api.Controllers
             return Ok(new { message = "User created successfully.", userName = created });
         }
 
-        //[HttpPost("validate")]
-        //public ActionResult<EmployeeLogin> ValidateUser([FromBody] EmployeeLogin login)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
+        [HttpPost("validate")]
+        public ActionResult<EmployeeLogin> ValidateUser([FromBody] LoginModel login)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        //    var result = _userRepo.ValidateUser(login.Email, login.Password);
-        //    if (result == null)
-        //        return Unauthorized(new { message = "Invalid email or password." });
+            var result = _userRepo.ValidateUser(login.UserName, login.Password);
+            if (result == null)
+                return Unauthorized(new { message = "Invalid UserName or password." });
 
-        //    return Ok(result);
-        //}
+            return Ok(result);
+        }
     }
 }
