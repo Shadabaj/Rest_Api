@@ -1,4 +1,5 @@
 ﻿using DAL.Entity;
+using Microsoft.Extensions.Configuration;
 using Models;
 using Repository.Interface;
 using Services.Interface;
@@ -13,8 +14,9 @@ namespace Services.Implementation
     public class UserService :IUserService
     {
         private readonly IUserRepo _UserRepo;
+        protected IConfiguration _config;
 
-       public UserService(IUserRepo userRepo)
+        public UserService(IUserRepo userRepo)
         {
             _UserRepo = userRepo;
         }
@@ -28,5 +30,10 @@ namespace Services.Implementation
         {
             return _UserRepo.ValidateUser(email, password);
         }
+
+        //private string GenerateJsonWebToken(EmployeeLogin user)
+        //{
+           
+        //}
     }
 }

@@ -2,9 +2,13 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Repository.Implementation;
 using Repository.Interface;
+using Serilog;
 using Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,6 +30,20 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enrich every request with CorrelationId (Cogitate-style request context)
+app.Use(async (context, next) =>
+{
+    var correlationId = context.Request.Headers["X-Correlation-Id"].FirstOrDefault()
+                        ?? Guid.NewGuid().ToString("N");
+    context.Response.Headers["X-Correlation-Id"] = correlationId;
+    using (Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId))
+    {
+        await next();
+    }
+});
+
+app.UseSerilogRequestLogging();
 
 app.UseAuthorization();
 
