@@ -1,0 +1,130 @@
+﻿{
+   "CodeGenerationMode": 4,
+   "ContextClassName": "AppDbContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1777",
+   "ModelNamespace": null,
+   "OutputContextPath": ".\/",
+   "OutputPath": "Entity",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "DAL",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[AttendanceAdjustmentRequests]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AttendanceDaily]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AttendancePunches]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[City]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CompanyHolidays]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Country]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Departments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Designations]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmployeeMaster]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmployeeShiftAssignments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LeaveRequests]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LeaveTypes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Roles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ShiftMaster]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ShiftWorkDays]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[State]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Users]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserSessionHistory]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkLocations]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false,
+   "UseTypedTvpParameters": true
+}
