@@ -1,0 +1,22 @@
+<div class="page-head"><div><h2>Shifts</h2><p>Shift masters and employee assignments.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel" style="margin-bottom:1rem"><table>
+<thead><tr><th>Code</th><th>Name</th><th>Start</th><th>End</th><th>Work mins</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of shifts">
+  <td>{{ row.shiftCode }}</td><td>{{ row.shiftName }}</td>
+  <td>{{ row.startTime }}</td><td>{{ row.endTime }}</td>
+  <td>{{ row.requiredWorkMinutes }}</td>
+  <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+</tr>
+</tbody></table></div>
+<div class="page-head"><div><h2>Assignments</h2></div></div>
+<div class="panel"><table>
+<thead><tr><th>Employee</th><th>Shift</th><th>From</th><th>To</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of assignments">
+  <td>{{ row.employeeName }}</td><td>{{ row.shiftName }}</td>
+  <td>{{ row.effectiveFrom }}</td><td>{{ row.effectiveTo || 'Open' }}</td>
+</tr>
+<tr *ngIf="!assignments.length"><td colspan="4" class="muted">No assignments found.</td></tr>
+</tbody></table></div>

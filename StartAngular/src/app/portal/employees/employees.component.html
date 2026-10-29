@@ -1,0 +1,20 @@
+<div class="page-head"><div><h2>Employees</h2><p>Active employee master records.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel">
+  <table>
+    <thead>
+      <tr><th>Code</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows">
+        <td>{{ row.employeeCode }}</td>
+        <td>{{ row.firstName }} {{ row.lastName }}</td>
+        <td>{{ row.emailAddress }}</td>
+        <td>{{ row.departmentName || '—' }}</td>
+        <td>{{ row.designationName || '—' }}</td>
+        <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+      </tr>
+      <tr *ngIf="!rows.length"><td colspan="6" class="muted">No employees found.</td></tr>
+    </tbody>
+  </table>
+</div>

@@ -19,6 +19,7 @@ namespace Services
             });
 
             //Repository
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserRepo, UserRepo>();
 
             //Services

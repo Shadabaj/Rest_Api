@@ -1,0 +1,129 @@
+.login-page {
+  min-height: calc(100vh - var(--header-h));
+  display: grid;
+  place-items: center;
+  padding: calc(var(--header-h) + 2rem) 1.25rem 3rem;
+  background:
+    radial-gradient(900px 420px at 15% 10%, rgba(31, 158, 146, 0.18), transparent 55%),
+    linear-gradient(180deg, #eef3f6 0%, #f7fafc 100%);
+}
+
+.login-panel {
+  width: min(100%, 420px);
+  padding: 2rem 1.75rem 1.75rem;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  animation: rise-in 0.55s var(--ease) both;
+}
+
+.login-panel__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 0.85rem;
+}
+
+.login-panel__brand img {
+  border-radius: 12px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--teal-deep);
+}
+
+.login-panel__brand h1 {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  letter-spacing: -0.03em;
+}
+
+.login-panel__support {
+  margin: 0 0 1.5rem;
+  color: var(--ink-soft);
+}
+
+.login-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(31, 158, 146, 0.15);
+}
+
+.field input.is-invalid {
+  border-color: #d64545;
+}
+
+.field small {
+  color: #b42318;
+  font-size: 0.8rem;
+}
+
+.form-alert {
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: #fdecec;
+  color: #9b1c1c;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.submit-btn {
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), background 0.2s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #f0b123;
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.1rem;
+  font-weight: 600;
+  color: var(--teal-deep);
+}

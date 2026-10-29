@@ -1,0 +1,12 @@
+<div class="page-head"><div><h2>Departments</h2><p>Organization structure units.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel"><table>
+<thead><tr><th>Code</th><th>Name</th><th>Description</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of rows">
+  <td>{{ row.departmentCode }}</td><td>{{ row.departmentName }}</td>
+  <td>{{ row.description || '—' }}</td>
+  <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+</tr>
+<tr *ngIf="!rows.length"><td colspan="4" class="muted">No departments found.</td></tr>
+</tbody></table></div>

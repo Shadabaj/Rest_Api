@@ -1,0 +1,85 @@
+.clock-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1.15rem 1.25rem;
+  border-radius: 16px;
+  background:
+    radial-gradient(500px 180px at 90% 0%, rgba(31, 158, 146, 0.2), transparent 55%),
+    #0e1a24;
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.clock-card__meta {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.clock-card__meta strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.clock-card__meta small {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.status-pill {
+  width: fit-content;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-pill.is-in {
+  background: rgba(61, 207, 142, 0.2);
+  color: #7dffb4;
+}
+
+.status-pill.is-out {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.clock-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.clock-btn {
+  min-height: 46px;
+  min-width: 120px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clock-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.clock-btn--in {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.clock-btn--out {
+  background: #fff;
+  color: var(--ink);
+}
+
+.success {
+  color: #147a71;
+  font-weight: 700;
+}

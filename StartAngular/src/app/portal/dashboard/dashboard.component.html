@@ -1,0 +1,17 @@
+<div class="page-head">
+  <div>
+    <h2>Dashboard</h2>
+    <p>Live snapshot across people, leave, attendance, and holidays.</p>
+  </div>
+</div>
+
+<p class="error" *ngIf="error">{{ error }}</p>
+
+<div class="cards" *ngIf="summary">
+  <div class="card"><span>Employees</span><strong>{{ summary.employees }}</strong></div>
+  <div class="card"><span>Departments</span><strong>{{ summary.departments }}</strong></div>
+  <div class="card"><span>Pending leaves</span><strong>{{ summary.pendingLeaves }}</strong></div>
+  <div class="card"><span>Pending adjustments</span><strong>{{ summary.pendingAdjustments }}</strong></div>
+  <div class="card"><span>Holidays this year</span><strong>{{ summary.holidaysThisYear }}</strong></div>
+  <div class="card"><span>Present today</span><strong>{{ summary.presentToday }}</strong></div>
+</div>

@@ -1,0 +1,14 @@
+<div class="page-head"><div><h2>Leave types</h2><p>Paid and unpaid leave categories.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel"><table>
+<thead><tr><th>Code</th><th>Name</th><th>Paid</th><th>Max days</th><th>Approval</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of rows">
+  <td>{{ row.leaveCode }}</td><td>{{ row.leaveName }}</td>
+  <td>{{ row.isPaid ? 'Yes' : 'No' }}</td>
+  <td>{{ row.maxDaysPerYear ?? '—' }}</td>
+  <td>{{ row.requiresApproval ? 'Required' : 'Auto' }}</td>
+  <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+</tr>
+<tr *ngIf="!rows.length"><td colspan="6" class="muted">No leave types found.</td></tr>
+</tbody></table></div>

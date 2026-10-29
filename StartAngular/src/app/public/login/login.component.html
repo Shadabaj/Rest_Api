@@ -1,1 +1,53 @@
-<p>login works!</p>
+<section class="login-page">
+  <div class="login-panel">
+    <div class="login-panel__brand">
+      <img src="assets/employee360-mark.png" width="48" height="48" alt="" />
+      <div>
+        <p class="eyebrow">Employee 360</p>
+        <h1>Sign in</h1>
+      </div>
+    </div>
+
+    <p class="login-panel__support">Use your employee code to open the portal.</p>
+
+    <form class="login-form" [formGroup]="userForm" (ngSubmit)="loginUser()" novalidate>
+      <div class="field">
+        <label for="userName">Username</label>
+        <input
+          id="userName"
+          type="text"
+          formControlName="userName"
+          placeholder="NEO1234"
+          autocomplete="username"
+          [class.is-invalid]="submitted && f['userName'].invalid" />
+        <small *ngIf="submitted && f['userName'].errors?.['required']">Username is required.</small>
+        <small *ngIf="submitted && f['userName'].errors?.['pattern']">
+          Use NEO followed by 4 digits (e.g. NEO1234).
+        </small>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Your password"
+          autocomplete="current-password"
+          [class.is-invalid]="submitted && f['password'].invalid" />
+        <small *ngIf="submitted && f['password'].errors?.['required']">Password is required.</small>
+        <small *ngIf="submitted && f['password'].errors?.['pattern']">
+          Min 8 chars, with uppercase, number, and special character.
+        </small>
+      </div>
+
+      <div class="form-alert" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+      <button class="submit-btn" type="submit" [disabled]="loading">
+        {{ loading ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+
+    <a routerLink="/" class="back-link">Back to home</a>
+  </div>
+</section>

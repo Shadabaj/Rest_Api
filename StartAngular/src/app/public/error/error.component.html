@@ -1,0 +1,19 @@
+<section class="state-page">
+  <div class="state-card">
+    <p class="eyebrow">Employee 360</p>
+    <h1>Something went wrong</h1>
+    <p class="lead">
+      We couldn’t complete that request. You can go home and try again.
+    </p>
+
+    <div class="details" *ngIf="error">
+      <p><strong>Status:</strong> {{ error?.status || 'Network' }}</p>
+      <p><strong>Message:</strong> {{ error?.message }}</p>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" (click)="goHome()">Back to home</button>
+      <button type="button" class="btn btn-ghost" (click)="retryLogin()">Sign in</button>
+    </div>
+  </div>
+</section>

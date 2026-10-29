@@ -1,0 +1,65 @@
+<div class="page-head">
+  <div>
+    <h2>My attendance</h2>
+    <p>Clock in / out for today, then review your punches.</p>
+  </div>
+</div>
+
+<div class="clock-card">
+  <div class="clock-card__meta">
+    <span class="status-pill" [class.is-in]="isClockedIn" [class.is-out]="!isClockedIn">
+      {{ isClockedIn ? 'Clocked in' : 'Clocked out' }}
+    </span>
+    <strong>{{ nowLabel }}</strong>
+    <small *ngIf="lastPunchAt">Last punch: {{ lastPunchAt | date:'medium' }}</small>
+  </div>
+
+  <div class="clock-card__actions">
+    <button
+      type="button"
+      class="clock-btn clock-btn--in"
+      [disabled]="actionLoading || isClockedIn"
+      (click)="clockIn()">
+      Clock in
+    </button>
+    <button
+      type="button"
+      class="clock-btn clock-btn--out"
+      [disabled]="actionLoading || !isClockedIn"
+      (click)="clockOut()">
+      Clock out
+    </button>
+  </div>
+</div>
+
+<p class="error" *ngIf="error">{{ error }}</p>
+<p class="success" *ngIf="success">{{ success }}</p>
+
+<div class="page-head"><div><h2>Daily</h2></div></div>
+<div class="panel" style="margin-bottom:1rem"><table>
+<thead><tr><th>Date</th><th>Shift</th><th>In</th><th>Out</th><th>Worked</th><th>Late</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of daily">
+  <td>{{ row.attendanceDate }}</td>
+  <td>{{ row.shiftName || '—' }}</td>
+  <td>{{ row.firstInAt || '—' }}</td>
+  <td>{{ row.lastOutAt || '—' }}</td>
+  <td>{{ row.totalWorkedMinutes }}m</td>
+  <td>{{ row.lateMinutes }}m</td>
+  <td><span class="badge">{{ row.attendanceStatus }}</span></td>
+</tr>
+<tr *ngIf="!daily.length"><td colspan="7" class="muted">No attendance yet.</td></tr>
+</tbody></table></div>
+
+<div class="page-head"><div><h2>Punches</h2></div></div>
+<div class="panel"><table>
+<thead><tr><th>When</th><th>Type</th><th>Source</th><th>Remarks</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of punches">
+  <td>{{ row.punchDateTime }}</td>
+  <td>{{ row.punchType }}</td>
+  <td>{{ row.punchSource }}</td>
+  <td>{{ row.remarks || '—' }}</td>
+</tr>
+<tr *ngIf="!punches.length"><td colspan="4" class="muted">No punches yet.</td></tr>
+</tbody></table></div>

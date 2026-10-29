@@ -1,0 +1,16 @@
+<div class="page-head"><div><h2>Locations</h2><p>Countries and work locations.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel" style="margin-bottom:1rem"><table>
+<thead><tr><th>Country</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of countries"><td>{{ row.countryName }}</td></tr>
+</tbody></table></div>
+<div class="panel"><table>
+<thead><tr><th>Code</th><th>Name</th><th>City</th><th>Timezone</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of workLocations">
+  <td>{{ row.locationCode }}</td><td>{{ row.locationName }}</td>
+  <td>{{ row.cityName || '—' }}</td><td>{{ row.timeZoneId }}</td>
+  <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+</tr>
+</tbody></table></div>

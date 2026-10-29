@@ -1,0 +1,13 @@
+<div class="page-head"><div><h2>Roles</h2><p>System and custom access roles.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel"><table>
+<thead><tr><th>Name</th><th>Description</th><th>System</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of rows">
+  <td>{{ row.name }}</td>
+  <td>{{ row.description || '—' }}</td>
+  <td>{{ row.isSystemRole ? 'Yes' : 'No' }}</td>
+  <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+</tr>
+<tr *ngIf="!rows.length"><td colspan="4" class="muted">No roles found.</td></tr>
+</tbody></table></div>

@@ -1,0 +1,26 @@
+<div class="page-head">
+  <div>
+    <h2>Company holidays</h2>
+    <p>Optional and mandatory holidays for the current year.</p>
+  </div>
+</div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel">
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th><th>Name</th><th>Location</th><th>Optional</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows">
+        <td>{{ row.holidayDate }}</td>
+        <td>{{ row.holidayName }}</td>
+        <td>{{ row.cityName || row.stateName || row.countryName || 'All' }}</td>
+        <td>{{ row.isOptional ? 'Yes' : 'No' }}</td>
+        <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+      </tr>
+      <tr *ngIf="!rows.length"><td colspan="5" class="muted">No holidays found.</td></tr>
+    </tbody>
+  </table>
+</div>

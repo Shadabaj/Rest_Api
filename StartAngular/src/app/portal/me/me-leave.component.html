@@ -1,0 +1,15 @@
+<div class="page-head"><div><h2>My leave</h2><p>Your leave requests and status.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel"><table>
+<thead><tr><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of rows">
+  <td>{{ row.leaveTypeName }}</td>
+  <td>{{ row.startDate }}</td>
+  <td>{{ row.endDate }}</td>
+  <td>{{ row.requestedDays }}</td>
+  <td>{{ row.reason || '—' }}</td>
+  <td><span class="badge">{{ row.requestStatus }}</span></td>
+</tr>
+<tr *ngIf="!rows.length"><td colspan="6" class="muted">No leave requests yet.</td></tr>
+</tbody></table></div>

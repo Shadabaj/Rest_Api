@@ -1,0 +1,35 @@
+<div class="portal" [class.is-open]="menuOpen">
+  <aside class="portal__sidebar">
+    <div class="portal__brand">
+      <img src="assets/employee360-mark.png" width="36" height="36" alt="" />
+      <strong>{{ brandName }}</strong>
+    </div>
+
+    <div class="portal__user" *ngIf="displayName">
+      <strong>{{ displayName }}</strong>
+      <span>{{ roleLabel }}</span>
+    </div>
+
+    <nav>
+      <a
+        *ngFor="let item of nav"
+        [routerLink]="item.path"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: !!item.exact }"
+        (click)="closeMenu()">
+        {{ item.label }}
+      </a>
+    </nav>
+    <button type="button" class="logout" (click)="logout()">Sign out</button>
+  </aside>
+
+  <div class="portal__main">
+    <header class="portal__top">
+      <button type="button" class="menu-btn" (click)="toggleMenu()" aria-label="Toggle menu">Menu</button>
+      <h1>People operations</h1>
+    </header>
+    <section class="portal__content">
+      <router-outlet></router-outlet>
+    </section>
+  </div>
+</div>

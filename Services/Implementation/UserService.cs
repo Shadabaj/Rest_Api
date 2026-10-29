@@ -112,23 +112,21 @@ namespace Services.Implementation
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, user.UserName),
-                new(JwtRegisteredClaimNames.Name, string.Concat(user.FirstName, " ", user.LastName)),
+                new("name", string.Concat(user.FirstName, " ", user.LastName).Trim()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new("userId", user.UserId.ToString()),
                 new("employeeId", user.EmployeeId.ToString())
             };
 
-            foreach (var role in user.Roles)
-                claims.Add(new Claim(ClaimTypes.Role, role));
+            foreach (var role in user.Roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct())
+                claims.Add(new Claim("role", role.Trim()));
 
-            var token = new JwtSecurityToken(
-                _config["Jwt:Issuer"],
-                _config["Jwt:Audience"],
-                claims,
-                expires: DateTime.UtcNow.AddMinutes(accessMinutes),
-                signingCredentials: credentials);
+            var handler = new JwtSecurityTokenHandler();
+            handler.OutboundClaimTypeMap.Clear();
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],_config["Jwt:Audience"],claims,expires: DateTime.UtcNow.AddMinutes(accessMinutes),signingCredentials: credentials);
+
+            return handler.WriteToken(token);
         }
 
         private static string GenerateRefreshTokenValue()
@@ -146,16 +144,12 @@ namespace Services.Implementation
 
         private int GetAccessTokenMinutes()
         {
-            return int.TryParse(_config["Jwt:AccessTokenMinutes"], out var minutes) && minutes > 0
-                ? minutes
-                : 15;
+            return int.TryParse(_config["Jwt:AccessTokenMinutes"], out var minutes) && minutes > 0 ? minutes: 15;
         }
 
         private int GetRefreshTokenDays()
         {
-            return int.TryParse(_config["Jwt:RefreshTokenDays"], out var days) && days > 0
-                ? days
-                : 7;
+            return int.TryParse(_config["Jwt:RefreshTokenDays"], out var days) && days > 0? days :7;
         }
     }
 }

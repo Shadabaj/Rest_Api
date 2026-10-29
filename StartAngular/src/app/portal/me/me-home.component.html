@@ -1,0 +1,30 @@
+<div class="page-head">
+  <div>
+    <h2>My workspace</h2>
+    <p>Welcome{{ profile ? ', ' + profile.firstName : '' }}. Self-service for attendance and leave.</p>
+  </div>
+</div>
+<p class="error" *ngIf="error">{{ error }}</p>
+
+<div class="cards" *ngIf="profile">
+  <div class="card"><span>Employee code</span><strong style="font-size:1.2rem">{{ profile.employeeCode }}</strong></div>
+  <div class="card"><span>Department</span><strong style="font-size:1.2rem">{{ profile.departmentName || '—' }}</strong></div>
+  <div class="card"><span>Designation</span><strong style="font-size:1.2rem">{{ profile.designationName || '—' }}</strong></div>
+  <div class="card"><span>Location</span><strong style="font-size:1.2rem">{{ profile.workLocationName || '—' }}</strong></div>
+</div>
+
+<div class="panel" *ngIf="profile" style="margin-bottom:1rem">
+  <table>
+    <tbody>
+      <tr><th>Name</th><td>{{ profile.firstName }} {{ profile.lastName }}</td></tr>
+      <tr><th>Email</th><td>{{ profile.emailAddress || '—' }}</td></tr>
+      <tr><th>Mobile</th><td>{{ profile.mobileNumber || '—' }}</td></tr>
+      <tr><th>Joined</th><td>{{ profile.dateOfJoinee }}</td></tr>
+      <tr><th>Login</th><td>{{ userName }}</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p *ngIf="profile">
+  <a routerLink="/portal/me/attendance" class="badge">Go to Clock in / Clock out →</a>
+</p>

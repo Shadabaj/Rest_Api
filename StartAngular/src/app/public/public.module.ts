@@ -9,6 +9,8 @@ import { PubliclayoutComponent } from './publiclayout/publiclayout.component';
 import { PublicHeaderComponent } from './publiclayout/public-header/public-header.component';
 import { PublicFooterComponent } from './publiclayout/public-footer/public-footer.component';
 import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ErrorComponent } from './error/error.component';
 
 
 @NgModule({
@@ -18,12 +20,14 @@ import { RouterModule } from '@angular/router';
     HomeComponent,
     PubliclayoutComponent,
     PublicHeaderComponent,
-    PublicFooterComponent
+    PublicFooterComponent,
+    ErrorComponent
   ],
   imports: [
     CommonModule,
     PublicRoutingModule,
-    RouterModule
+    RouterModule,
+    ReactiveFormsModule
   ]
 })
 export class PublicModule { }

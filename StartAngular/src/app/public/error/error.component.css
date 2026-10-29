@@ -1,0 +1,77 @@
+.state-page {
+  min-height: calc(100vh - var(--header-h));
+  display: grid;
+  place-items: center;
+  padding: calc(var(--header-h) + 2rem) 1.25rem 3rem;
+  background:
+    radial-gradient(800px 360px at 80% 0%, rgba(227, 160, 8, 0.16), transparent 50%),
+    linear-gradient(180deg, #eef3f6, #f7fafc);
+}
+
+.state-card {
+  width: min(100%, 520px);
+  padding: 2rem;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--teal-deep);
+}
+
+h1 {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  margin: 0.8rem 0 0;
+  color: var(--ink-soft);
+}
+
+.details {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: var(--mist);
+  font-size: 0.92rem;
+}
+
+.details p {
+  margin: 0.25rem 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.5rem;
+}
+
+.btn {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 12px;
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}

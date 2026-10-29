@@ -1,0 +1,14 @@
+<div class="page-head"><div><h2>Leave requests</h2><p>Employee leave applications and review status.</p></div></div>
+<p class="error" *ngIf="error">{{ error }}</p>
+<div class="panel"><table>
+<thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th></tr></thead>
+<tbody>
+<tr *ngFor="let row of rows">
+  <td>{{ row.employeeName }} <span class="muted">({{ row.employeeCode }})</span></td>
+  <td>{{ row.leaveTypeName }}</td>
+  <td>{{ row.startDate }}</td><td>{{ row.endDate }}</td>
+  <td>{{ row.requestedDays }}</td>
+  <td><span class="badge">{{ row.requestStatus }}</span></td>
+</tr>
+<tr *ngIf="!rows.length"><td colspan="6" class="muted">No leave requests found.</td></tr>
+</tbody></table></div>

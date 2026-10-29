@@ -133,7 +133,7 @@ namespace Rest_Api.Controllers
         [AllowAnonymous]
         public ActionResult Logout([FromBody] RefreshTokenRequest request)
         {
-            _logger.LogInformation("Logout started {@Context}", new { Action = "Logout" });
+            //_logger.LogInformation("Logout started {@Context}", new { Action = "Logout" });
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -141,11 +141,11 @@ namespace Rest_Api.Controllers
             var revoked = _userService.RevokeRefreshToken(request.RefreshToken);
             if (!revoked)
             {
-                _logger.LogWarning("Logout token not found {@Context}", new { Action = "Logout" });
+               // _logger.LogWarning("Logout token not found {@Context}", new { Action = "Logout" });
                 return Ok(new { message = "Logged out." });
             }
 
-            _logger.LogInformation("Logout succeeded {@Context}", new { Action = "Logout" });
+            //_logger.LogInformation("Logout succeeded {@Context}", new { Action = "Logout" });
             return Ok(new { message = "Logged out." });
         }
     }
