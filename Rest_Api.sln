@@ -16,13 +16,20 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SP", "SP", "{A5314AAF-74AB-4608-936D-08CF3534A9A0}"
+	ProjectSection(SolutionItems) = preProject
+		DB\SP\dbo.usp_CreateUserAccount.sql = DB\SP\dbo.usp_CreateUserAccount.sql
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FUNCTION", "FUNCTION", "{D499C425-8006-4C21-8DA0-D3176C85A322}"
+	ProjectSection(SolutionItems) = preProject
+		DB\FUNCTION\fn_GetNextEmployeeCode.sql = DB\FUNCTION\fn_GetNextEmployeeCode.sql
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ADHOC", "ADHOC", "{805192AC-01E9-41D8-A39C-94B87D0CF9C4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "INSERT", "INSERT", "{AEC8B3A3-C358-4DD0-AF88-FD1E2880482B}"
 	ProjectSection(SolutionItems) = preProject
+		scripts\CreateRefreshTokensTable.sql = scripts\CreateRefreshTokensTable.sql
 		..\..\..\Downloads\EmployeeManagement.sql = ..\..\..\Downloads\EmployeeManagement.sql
 	EndProjectSection
 EndProject

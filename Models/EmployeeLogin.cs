@@ -23,12 +23,20 @@ namespace Models
 
         public int EmployeeId { get; set; }
 
+        public int UserId { get; set; }
+
         public  ICollection<string> Roles { get; set; } = new List<string>();
 
         public bool IsActive { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
+        /// <summary>Access JWT (short-lived).</summary>
+        public string Token { get; set; } = string.Empty;
 
+        public string RefreshToken { get; set; } = string.Empty;
+
+        public int ExpiresIn { get; set; }
     }
 }
+

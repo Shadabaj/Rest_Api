@@ -1,17 +1,12 @@
-﻿using DAL.Entity;
-using Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Models;
 
 namespace Services.Interface
 {
     public interface IUserService
     {
         string CreateUser(EmployeeLogin user);
-        EmployeeLogin? ValidateUser(string email, string password);
-
+        EmployeeLogin? ValidateUser(string email, string password, string? ipAddress = null);
+        TokenResponse? RefreshTokens(string refreshToken, string? ipAddress = null);
+        bool RevokeRefreshToken(string refreshToken);
     }
 }

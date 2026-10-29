@@ -99,21 +99,55 @@ namespace Repository.Implementation
             if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 return null;
 
+            return MapToEmployeeLogin(user);
+        }
+
+        public EmployeeLogin? GetActiveUserById(int userId)
+        {
+            var user = _db.Users
+                .Include(u => u.Employee)
+                .Include(u => u.UserRoleUsers)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefault(u =>
+                    u.Id == userId
+                    && u.IsActive
+                    && u.Employee != null
+                    && u.Employee.IsActive
+                    && !u.Employee.IsDeleted);
+
+            return user == null ? null : MapToEmployeeLogin(user);
+        }
+
+        public RefreshToken? GetRefreshTokenByHash(string tokenHash)
+        {
+            return _db.RefreshTokens.FirstOrDefault(t => t.TokenHash == tokenHash);
+        }
+
+        public void AddRefreshToken(RefreshToken refreshToken)
+        {
+            _db.RefreshTokens.Add(refreshToken);
+        }
+
+        public void UpdateRefreshToken(RefreshToken refreshToken)
+        {
+            _db.RefreshTokens.Update(refreshToken);
+        }
+
+        private static EmployeeLogin MapToEmployeeLogin(User user)
+        {
             return new EmployeeLogin
             {
-                FirstName=user.Employee.FirstName,
+                FirstName = user.Employee.FirstName,
                 LastName = user.Employee.LastName,
                 UserName = user.UserName,
                 EmployeeId = user.EmployeeId,
-                RoleId=user.Id,
+                UserId = user.Id,
+                RoleId = user.UserRoleUsers.Select(x=>x.RoleId).FirstOrDefault(),
                 Roles = user.UserRoleUsers
                     .Where(ur => ur.Role != null && ur.Role.IsActive)
                     .Select(ur => ur.Role.Name)
                     .ToList()
             };
         }
-
-
-       
     }
 }

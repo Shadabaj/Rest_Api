@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models;
-using Repository.Interface;
+using Services.Interface;
 
 namespace Rest_Api.Controllers
 {
@@ -8,19 +9,19 @@ namespace Rest_Api.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly IUserRepo _userRepo;
+        private readonly IUserService _userService;
         private readonly ILogger<LoginController> _logger;
 
-        public LoginController(IUserRepo userRepo, ILogger<LoginController> logger)
+        public LoginController(IUserService userService, ILogger<LoginController> logger)
         {
-            _userRepo = userRepo;
+            _userService = userService;
             _logger = logger;
         }
 
         [HttpPost("create")]
+        [AllowAnonymous]
         public ActionResult CreateUser([FromBody] EmployeeLogin request)
         {
-
             _logger.LogInformation("CreateUser started {@Context}", new { Action = "CreateUser", RoleId = request.RoleId });
 
             if (!ModelState.IsValid)
@@ -45,7 +46,7 @@ namespace Rest_Api.Controllers
                     RoleId = request.RoleId
                 };
 
-                var created = _userRepo.CreateUser(user);
+                var created = _userService.CreateUser(user);
                 if (string.IsNullOrEmpty(created))
                 {
                     _logger.LogWarning(
@@ -61,7 +62,6 @@ namespace Rest_Api.Controllers
             }
             catch (Exception ex)
             {
-                // Cogitate-style: error first, then message with context
                 _logger.LogError(
                     ex,
                     "CreateUser failed {@Context}",
@@ -71,6 +71,7 @@ namespace Rest_Api.Controllers
         }
 
         [HttpPost("validate")]
+        [AllowAnonymous]
         public ActionResult<EmployeeLogin> ValidateUser([FromBody] LoginModel login)
         {
             _logger.LogInformation("ValidateUser started {@Context}", new { Action = "ValidateUser", UserName = login.UserName });
@@ -83,7 +84,7 @@ namespace Rest_Api.Controllers
 
             try
             {
-                var result = _userRepo.ValidateUser(login.UserName, login.Password);
+                var result = _userService.ValidateUser(login.UserName, login.Password, HttpContext.Connection.RemoteIpAddress?.ToString());
                 if (result == null)
                 {
                     _logger.LogWarning("ValidateUser unauthorized {@Context}", new { Action = "ValidateUser", UserName = login.UserName });
@@ -95,17 +96,57 @@ namespace Rest_Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"ValidateUser failed {@Context}",new { Action = "ValidateUser", UserName = login.UserName });
+                _logger.LogError(ex, "ValidateUser failed {@Context}", new { Action = "ValidateUser", UserName = login.UserName });
                 throw;
             }
         }
 
+        [HttpPost("refresh")]
+        [AllowAnonymous]
+        public ActionResult<TokenResponse> Refresh([FromBody] RefreshTokenRequest request)
+        {
+            _logger.LogInformation("RefreshToken started {@Context}", new { Action = "RefreshToken" });
 
-        //[HttpGet("get-value")]
-        //public ActionResult<int> GetValue()
-        //{
-        //    int a = 10;int b = 0;
-        //    return Ok(a/b);
-        //}
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var tokens = _userService.RefreshTokens(request.RefreshToken, HttpContext.Connection.RemoteIpAddress?.ToString());
+                if (tokens == null)
+                {
+                    _logger.LogWarning("RefreshToken rejected {@Context}", new { Action = "RefreshToken", Reason = "InvalidOrExpired" });
+                    return Unauthorized(new { message = "Invalid or expired refresh token." });
+                }
+
+                _logger.LogInformation("RefreshToken succeeded {@Context}", new { Action = "RefreshToken" });
+                return Ok(tokens);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "RefreshToken failed {@Context}", new { Action = "RefreshToken" });
+                throw;
+            }
+        }
+
+        [HttpPost("logout")]
+        [AllowAnonymous]
+        public ActionResult Logout([FromBody] RefreshTokenRequest request)
+        {
+            _logger.LogInformation("Logout started {@Context}", new { Action = "Logout" });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var revoked = _userService.RevokeRefreshToken(request.RefreshToken);
+            if (!revoked)
+            {
+                _logger.LogWarning("Logout token not found {@Context}", new { Action = "Logout" });
+                return Ok(new { message = "Logged out." });
+            }
+
+            _logger.LogInformation("Logout succeeded {@Context}", new { Action = "Logout" });
+            return Ok(new { message = "Logged out." });
+        }
     }
 }
