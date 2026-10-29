@@ -1,1 +1,57 @@
-<p>home works!</p>
+<section class="hero" aria-labelledby="hero-brand">
+  <div class="hero__media" aria-hidden="true">
+    <img
+      src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1800&q=80"
+      alt=""
+      class="hero__image" />
+    <div class="hero__veil"></div>
+  </div>
+
+  <div class="hero__content">
+    <p id="hero-brand" class="hero__brand">{{ brandName }}</p>
+    <h1>{{ headline }}</h1>
+    <p class="hero__support">{{ support }}</p>
+    <div class="hero__actions">
+      <a routerLink="/login" class="cta cta--primary">Sign in to portal</a>
+      <a routerLink="/" fragment="platform" class="cta cta--secondary">Explore platform</a>
+    </div>
+  </div>
+</section>
+
+<section class="platform" id="platform" aria-labelledby="platform-title">
+  <div class="section-shell">
+    <div class="section-intro">
+      <p class="eyebrow">Platform</p>
+      <h2 id="platform-title">A workspace that stays out of the way</h2>
+      <p>Three focused jobs. No clutter. Just the rhythm your team already follows.</p>
+    </div>
+
+    <ul class="feature-list">
+      <li *ngFor="let item of features; let i = index" [style.--accent]="item.accent" [style.--delay]="(i * 80) + 'ms'">
+        <span class="feature-list__index">0{{ i + 1 }}</span>
+        <div>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.copy }}</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="people" id="people" aria-labelledby="people-title">
+  <div class="people__panel">
+    <div class="people__copy">
+      <p class="eyebrow eyebrow--light">People first</p>
+      <h2 id="people-title">Made for teams who care how work feels</h2>
+      <p>{{ peopleNote }}</p>
+      <a routerLink="/login" class="cta cta--primary">Open Employee 360</a>
+    </div>
+    <div class="people__visual" aria-hidden="true">
+      <div class="orbit">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</section>

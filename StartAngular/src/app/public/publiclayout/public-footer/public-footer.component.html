@@ -1,1 +1,45 @@
-<p>public-footer works!</p>
+<footer class="site-footer" id="contact">
+  <div class="site-footer__glow" aria-hidden="true"></div>
+  <div class="site-footer__inner">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <div class="brand-row">
+          <span class="brand-row__mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="22" height="22" fill="none">
+              <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+              <circle cx="16" cy="16" r="6" fill="currentColor"/>
+            </svg>
+          </span>
+          <strong>{{ brandName }}</strong>
+        </div>
+        <p>{{ blurb }}</p>
+      </div>
+
+      <div class="site-footer__cols">
+        <div *ngFor="let col of columns" class="site-footer__col">
+          <h2>{{ col.title }}</h2>
+          <ul>
+            <li *ngFor="let link of col.links">
+              <a [routerLink]="link.path" [fragment]="link.fragment">{{ link.label }}</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="site-footer__col">
+          <h2>Talk to us</h2>
+          <ul>
+            <li *ngFor="let line of contactLines">{{ line }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <span>© {{ year }} {{ brandName }}. Built for modern HR teams.</span>
+      <span class="status">
+        <span class="status__dot" aria-hidden="true"></span>
+        All systems operational
+      </span>
+    </div>
+  </div>
+</footer>

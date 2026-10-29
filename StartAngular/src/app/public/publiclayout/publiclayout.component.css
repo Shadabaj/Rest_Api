@@ -1,0 +1,9 @@
+.public-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.public-shell__main {
+  flex: 1 0 auto;
+}
