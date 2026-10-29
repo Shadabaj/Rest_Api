@@ -15,5 +15,6 @@ BEGIN
     );
 
     CREATE INDEX IX_RefreshTokens_User_ExpiresAt ON dbo.RefreshTokens (UserId, ExpiresAt);
+
 END
 GO
