@@ -1,0 +1,82 @@
+<p>practise works!</p>
+
+
+<h1>Welcome to {{name}}!</h1>
+
+<p [style.color]="'blue'">This is a paragraph with blue text.</p>
+
+<a [href]="url" target="_blank">Visit Angular Website</a>
+
+<br/>
+<button (click)="Greet()" class="btn btn-primary">Click Me</button>
+
+<h2>Student Marks</h2>
+
+<div *ngFor="let student of student">
+  <p [ngClass]="{'text-success':student.Marks>=50,'text-danger':student.Marks<50}">Name: {{student.name}}, Marks: {{student.Marks}}</p>
+</div>
+
+
+
+
+<h1>Directives</h1>
+
+<input type="number" [(ngModel)]="userInputnumber" placeholder="Enter a number" />
+<div *ngIf="userInputnumber !== null && userInputnumber % 2 === 0">The number is even.</div>
+<div *ngIf="userInputnumber !== null && userInputnumber % 2 > 0">The number is odd.</div>
+
+<h1>NG IF ELSE</h1>
+
+
+<div *ngIf="userInputnumber !== null && userInputnumber !== undefined && userInputnumber % 2 === 0 then Even else Odd">Even Number</div>
+
+<ng-template #Even>Even Number</ng-template>
+<ng-template #Odd>Odd Number</ng-template>
+
+<ul *ngFor="let color of colors">
+  <li>{{color}}</li>
+</ul>
+
+<select [(ngModel)]="color">
+  <option value="" selected>---Select a color---</option>
+  <option *ngFor="let color of colors" [value]="color">{{color}}</option>
+</select>
+
+
+<div [ngStyle]="{color:color}">The Colour Name is {{color}}</div>
+
+<div [ngClass]="{'text-success':color==='Green','text-danger':color==='red'}">The Colour Name is {{color}}</div>
+
+<h1>NG Switch</h1>
+
+<input type="text" [(ngModel)]="Alphabet" placeholder="Enter a letter" />
+<div [ngSwitch]="Alphabet">
+  <p *ngSwitchCase="'A'">The letter is A.</p>
+  <p *ngSwitchCase="'B'">The letter is B.</p>
+  <p *ngSwitchDefault>The letter is not A or B.</p>
+</div>
+
+
+
+
+<h3 appCustom>
+    Hover over me
+</h3>
+
+
+ <h3 class="appCustom">
+    Hover over this text
+  </h3>
+  
+<input type="text" #tempMessage/>
+<a (click)="displayMessage()" class="btn btn-primary">Display Message</a>
+
+<br/>
+<input type="button" (keyup)="myFunction()" value="MyButton"/>
+
+
+<br/>
+<p>Square: {{ squareValue(inputvalue ?? 0) }}</p>
+<input type="number" [(ngModel)]="inputvalue" placeholder="Type something...."/>
+<input type="button" (click)="squareValue(inputvalue ?? 0)" value="Square Value"/>
+
