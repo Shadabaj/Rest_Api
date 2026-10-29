@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UPDATE", "UPDATE", "{AC172E
 		..\..\..\Downloads\EmployeeManagement_EmployeeCode_Update.sql = ..\..\..\Downloads\EmployeeManagement_EmployeeCode_Update.sql
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Angular", "Angular", "{909907FB-BE8B-4A7F-9C2D-A60B76AA5E75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
