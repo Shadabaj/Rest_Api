@@ -20,6 +20,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<AttendancePunch> AttendancePunches { get; set; }
 
+    public virtual DbSet<AuditTrial> AuditTrials { get; set; }
+
     public virtual DbSet<City> Cities { get; set; }
 
     public virtual DbSet<CompanyHoliday> CompanyHolidays { get; set; }
@@ -182,6 +184,31 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK_AttendancePunches_EnteredBy");
         });
 
+        modelBuilder.Entity<AuditTrial>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_AuditTrial_ID");
+
+            entity.ToTable("AuditTrial");
+
+            entity.HasIndex(e => e.UserName, "IX_AuditTrial_UserName");
+
+            entity.Property(e => e.ActionName).HasMaxLength(128);
+            entity.Property(e => e.ControllerName).HasMaxLength(128);
+            entity.Property(e => e.CreatedByIp)
+                .HasMaxLength(45)
+                .IsUnicode(false);
+            entity.Property(e => e.Message).HasMaxLength(400);
+            entity.Property(e => e.Timestamp).HasColumnType("datetime");
+            entity.Property(e => e.UserName)
+                .IsRequired()
+                .HasMaxLength(128)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.User).WithMany(p => p.AuditTrials)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_AuditTrial_Users");
+        });
+
         modelBuilder.Entity<City>(entity =>
         {
             entity.HasKey(e => e.RowId);
@@ -298,6 +325,8 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.EmployeeCode, "UQ_EmployeeMaster_EmployeeCode").IsUnique();
 
+            entity.HasIndex(e => e.EmployeeCode, "UQ__Employee__1F6425483E92D013").IsUnique();
+
             entity.HasIndex(e => e.EmailAddress, "UX_EmployeeMaster_EmailAddress")
                 .IsUnique()
                 .HasFilter("([EmailAddress] IS NOT NULL AND [EmailAddress]<>N'')");
@@ -317,9 +346,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.DeletedDate).HasPrecision(0);
             entity.Property(e => e.EmailAddress).HasMaxLength(254);
             entity.Property(e => e.EmployeeCode)
-                .HasMaxLength(7)
-                .IsUnicode(false)
-                .HasComputedColumnSql("('NEO'+right('0000'+CONVERT([varchar](10),[RowId]),(4)))", true);
+                .IsRequired()
+                .HasMaxLength(30)
+                .IsUnicode(false);
             entity.Property(e => e.FirstName)
                 .IsRequired()
                 .HasMaxLength(100);

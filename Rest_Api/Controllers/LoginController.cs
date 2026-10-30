@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Rest_Api.IpAddress;
 using Services.Interface;
 
 namespace Rest_Api.Controllers
@@ -11,11 +12,13 @@ namespace Rest_Api.Controllers
     {
         private readonly IUserService _userService;
         private readonly ILogger<LoginController> _logger;
+        private readonly IipAddress _ipAddress;
 
-        public LoginController(IUserService userService, ILogger<LoginController> logger)
+        public LoginController(IUserService userService, ILogger<LoginController> logger, IipAddress ipAddress)
         {
             _userService = userService;
             _logger = logger;
+            _ipAddress = ipAddress;
         }
 
         [HttpPost("create")]
@@ -84,7 +87,7 @@ namespace Rest_Api.Controllers
 
             try
             {
-                var result = _userService.ValidateUser(login.UserName, login.Password, HttpContext.Connection.RemoteIpAddress?.ToString());
+                var result = _userService.ValidateUser(login.UserName, login.Password, _ipAddress.GetIpAddress());
                 if (result == null)
                 {
                     _logger.LogWarning("ValidateUser unauthorized {@Context}", new { Action = "ValidateUser", UserName = login.UserName });
@@ -112,7 +115,7 @@ namespace Rest_Api.Controllers
 
             try
             {
-                var tokens = _userService.RefreshTokens(request.RefreshToken, HttpContext.Connection.RemoteIpAddress?.ToString());
+                var tokens = _userService.RefreshTokens(request.RefreshToken, _ipAddress.GetIpAddress());
                 if (tokens == null)
                 {
                     _logger.LogWarning("RefreshToken rejected {@Context}", new { Action = "RefreshToken", Reason = "InvalidOrExpired" });

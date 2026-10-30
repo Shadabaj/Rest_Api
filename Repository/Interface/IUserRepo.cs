@@ -12,6 +12,7 @@ namespace Repository.Interface
         RefreshToken? GetRefreshTokenByHash(string tokenHash);
         void AddRefreshToken(RefreshToken refreshToken);
         void UpdateRefreshToken(RefreshToken refreshToken);
+
     }
 }
 

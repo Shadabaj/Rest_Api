@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ADHOC", "ADHOC", "{805192AC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "INSERT", "INSERT", "{AEC8B3A3-C358-4DD0-AF88-FD1E2880482B}"
 	ProjectSection(SolutionItems) = preProject
+		DB\AuditTrial.sql = DB\AuditTrial.sql
 		scripts\CreateRefreshTokensTable.sql = scripts\CreateRefreshTokensTable.sql
 		..\..\..\Downloads\EmployeeManagement.sql = ..\..\..\Downloads\EmployeeManagement.sql
 	EndProjectSection

@@ -17,6 +17,7 @@ namespace Repository.Implementation
             _configuration = configuration;
         }
 
+        #region Create User
         public string CreateUser(EmployeeLogin employee)
         {
             using (SqlConnection con= new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
@@ -46,6 +47,8 @@ namespace Repository.Implementation
                 }
             }
         }
+
+        #endregion 
 
         #region Not In Used
         //public bool CreateUser(User user, string roles)
@@ -149,5 +152,34 @@ namespace Repository.Implementation
                     .ToList()
             };
         }
+
+        #region Not In Use
+        //public List<Role> GetRoles()
+        //{
+        //    var roles = new List<Role>();
+
+        //    using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+        //    using (var cmd = new SqlCommand("SELECT FROM Roles", conn))
+        //    {
+        //        conn.Open();
+
+        //        using (var reader = cmd.ExecuteReader())
+        //        {
+        //            while (reader.Read())
+        //            {
+        //                roles.Add(new Role
+        //                {
+        //                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+        //                    Name = reader.GetString(reader.GetOrdinal("Name")),
+        //                    IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
+        //                });
+        //            }
+        //        }
+        //    }
+
+        //    return roles;
+        //}
+        #endregion
+
     }
 }

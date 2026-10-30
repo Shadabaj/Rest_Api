@@ -22,15 +22,14 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        const isLoginCall = request.url.toLowerCase().includes('login/validate');
         const status = error.status || 0;
         const message =
           error.error?.message ||
           error.message ||
           'Something went wrong while talking to the server.';
 
-        // Let the page handle validation / business errors (e.g. already clocked in)
-        if (status === 400 || (isLoginCall && status === 401)) {
+        // 400: page handles validation. 401: AuthInterceptor refreshes or sends to login.
+        if (status === 400 || status === 401) {
           return throwError(() => error);
         }
 
@@ -40,7 +39,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           url: request.url
         });
 
-        if (status === 401 || status === 403) {
+        if (status === 403) {
           this.router.navigate(['/unauthorized']);
         } else {
           // network (0) and server errors

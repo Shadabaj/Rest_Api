@@ -7,17 +7,32 @@ using Repository.Implementation;
 using Repository.Interface;
 using Serilog;
 using Services;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Rest_Api.Custom_Middlewar;
+using Rest_Api.IpAddress;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Rest_Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
 
-builder.Services.AddControllers()
+//Ignore the Cycle CamelCase in JSON serialization 
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add(new AuthorizationFilter());
+        options.Filters.Add(new ActivityLogFilter());
+        // DI-backed ExceptionFilterAttribute → Serilog via ILogger
+        options.Filters.AddService<ExceptionFilter>();
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+// CORS configuration to allow requests from Angular client
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularClient", policy =>
@@ -52,12 +67,51 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+//Services Registration
 ConfigureDependency.RegisterService(builder.Services, builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IipAddress, IpAddress>();
+builder.Services.AddScoped<ExceptionFilter>();
 
-builder.Services.AddScoped<IUserRepo, UserRepo>();
+//Rate Limiting Configuration
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        context.HttpContext.Response.ContentType = "application/json";
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        {
+            context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString();
+        }
 
-var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("Jwt:Key is not configured.");
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            message = "Too many requests. Please try again later.",
+            status = 429
+        }, cancellationToken);
+    };
+
+    // One shared bucket per client IP (easy to see in Swagger / Postman).
+    // 5 calls allowed per 60s — clicking Execute slowly still hits 429.
+    options.AddPolicy("Fixed", httpContext =>
+    {
+        var partitionKey = httpContext.RequestServices.GetRequiredService<IipAddress>().GetIpAddress();
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey,
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromSeconds(60),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            });
+    });
+});
+
+var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is not configured.");
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -84,6 +138,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseMiddleware<Middleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -109,6 +165,8 @@ app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Rest_Api.IpAddress;
 using System.Threading.Tasks;
 
 namespace Rest_Api.Custom_Middlewar
@@ -8,14 +9,22 @@ namespace Rest_Api.Custom_Middlewar
     public class Middleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<Middleware> _logger;
+        private readonly IipAddress _ipAddress;
 
-        public Middleware(RequestDelegate next)
+        public Middleware(RequestDelegate next, ILogger<Middleware> logger, IipAddress ipAddress)
         {
             _next = next;
+            _logger = logger;
+            _ipAddress = ipAddress;
         }
 
         public Task Invoke(HttpContext httpContext)
         {
+            Console.WriteLine($"Request: {httpContext.Request.Method} {httpContext.Request.Path}");
+            _logger.LogInformation($"Request Shadab is best: {httpContext.Request.Method} {httpContext.Request.Path}");
+
+            _ipAddress.GetIpAddress();
 
             return _next(httpContext);
         }

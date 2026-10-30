@@ -39,6 +39,8 @@ public partial class User
 
     public virtual ICollection<AttendancePunch> AttendancePunches { get; set; } = new List<AttendancePunch>();
 
+    public virtual ICollection<AuditTrial> AuditTrials { get; set; } = new List<AuditTrial>();
+
     public virtual EmployeeMaster Employee { get; set; }
 
     public virtual ICollection<EmployeeShiftAssignment> EmployeeShiftAssignments { get; set; } = new List<EmployeeShiftAssignment>();

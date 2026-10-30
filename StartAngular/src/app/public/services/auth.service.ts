@@ -1,8 +1,9 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError, tap } from 'rxjs';
 import { LoginModel } from '../../Models/LoginModel';
 import { UserModel } from '../../Models/UserModel';
+import { TokenResponse } from '../../Models/TokenResponse';
 import { Environment } from '../../../Environment/Enviroment';
 import { API } from '../../Urls/API';
 import {
@@ -20,9 +21,12 @@ import { ACCESS_TOKEN_KEY, EMPLOYEE_KEY, REFRESH_TOKEN_KEY } from '../../constan
 })
 export class AuthService {
   private readonly httpheaders: HttpHeaders;
+  /** Bypasses interceptors so refresh/logout cannot loop on 401. */
+  private readonly rawHttp: HttpClient;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, httpBackend: HttpBackend) {
     this.httpheaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+    this.rawHttp = new HttpClient(httpBackend);
   }
 
   ValidateUser(user: LoginModel): Observable<HttpResponse<UserModel>> {
@@ -37,6 +41,22 @@ export class AuthService {
     });
   }
 
+  /** Exchange refresh token for a new access + refresh pair (rotation). */
+  refreshTokens(): Observable<TokenResponse> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available.'));
+    }
+
+    return this.rawHttp
+      .post<TokenResponse>(
+        Environment.apiUrl + API.REFRESH,
+        { refreshToken },
+        { headers: this.httpheaders }
+      )
+      .pipe(tap((tokens) => this.updateTokens(tokens)));
+  }
+
   setAuthUser(user: UserModel): void {
     sessionStorage.setItem(ACCESS_TOKEN_KEY, user.token);
     if (user.refreshToken) {
@@ -45,8 +65,25 @@ export class AuthService {
     sessionStorage.setItem(EMPLOYEE_KEY, JSON.stringify(user));
   }
 
+  updateTokens(tokens: TokenResponse): void {
+    sessionStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
+    sessionStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+
+    const user = this.getCurrentUser();
+    if (user) {
+      user.token = tokens.accessToken;
+      user.refreshToken = tokens.refreshToken;
+      user.expiresIn = tokens.expiresIn;
+      sessionStorage.setItem(EMPLOYEE_KEY, JSON.stringify(user));
+    }
+  }
+
   getAccessToken(): string | null {
     return sessionStorage.getItem(ACCESS_TOKEN_KEY);
+  }
+
+  getRefreshToken(): string | null {
+    return sessionStorage.getItem(REFRESH_TOKEN_KEY);
   }
 
   getCurrentUser(): UserModel | null {

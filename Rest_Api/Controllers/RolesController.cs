@@ -1,18 +1,26 @@
 using DAL;
 using DAL.Entity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Repository.Interface;
+using Rest_Api.Filters;
 
 namespace Rest_Api.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin")]
+[AuthorizationFilter(Roles = "Admin")]
 [Route("api/[controller]")]
+[EnableRateLimiting("Fixed")]
 public class RolesController : ControllerBase
 {
     private readonly AppDbContext _db;
-    public RolesController(AppDbContext db) => _db = db;
+    private readonly IUserRepo _userRepo;
+    public RolesController(AppDbContext db,IUserRepo userRepo) 
+    {
+        _db = db;
+        _userRepo = userRepo;     
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Role>>> GetAll()
@@ -52,4 +60,8 @@ public class RolesController : ControllerBase
         await _db.SaveChangesAsync();
         return NoContent();
     }
+
+
+
+
 }

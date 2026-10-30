@@ -9,6 +9,8 @@ public partial class EmployeeMaster
 {
     public int RowId { get; set; }
 
+    public string EmployeeCode { get; set; }
+
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
@@ -54,8 +56,6 @@ public partial class EmployeeMaster
     public bool IsDeleted { get; set; }
 
     public DateTime? DeletedDate { get; set; }
-
-    public string EmployeeCode { get; set; }
 
     public virtual ICollection<AttendanceAdjustmentRequest> AttendanceAdjustmentRequests { get; set; } = new List<AttendanceAdjustmentRequest>();
 
