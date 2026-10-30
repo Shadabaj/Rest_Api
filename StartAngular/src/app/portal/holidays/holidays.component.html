@@ -3,8 +3,10 @@
     <h2>Company holidays</h2>
     <p>Optional and mandatory holidays for the current year.</p>
   </div>
+  <button type="button" class="btn" *ngIf="canSeed" (click)="seedIndia()">Seed India holidays</button>
 </div>
 <p class="error" *ngIf="error">{{ error }}</p>
+<p class="success" *ngIf="success">{{ success }}</p>
 <div class="panel">
   <table>
     <thead>

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalLayoutComponent } from './portal-layout/portal-layout.component';
@@ -17,6 +18,7 @@ import { RolesComponent } from './roles/roles.component';
 import { MeHomeComponent } from './me/me-home.component';
 import { MeAttendanceComponent } from './me/me-attendance.component';
 import { MeLeaveComponent } from './me/me-leave.component';
+import { TripsComponent } from './trips/trips.component';
 import { PortalHomeRedirectComponent } from './portal-home-redirect.component';
 
 @NgModule({
@@ -36,8 +38,9 @@ import { PortalHomeRedirectComponent } from './portal-home-redirect.component';
     RolesComponent,
     MeHomeComponent,
     MeAttendanceComponent,
-    MeLeaveComponent
+    MeLeaveComponent,
+    TripsComponent
   ],
-  imports: [CommonModule, RouterModule, PortalRoutingModule]
+  imports: [CommonModule, FormsModule, RouterModule, PortalRoutingModule]
 })
 export class PortalModule {}

@@ -72,12 +72,62 @@ export class PortalApiService {
     return this.http.get<any[]>(this.base + API.COUNTRIES);
   }
 
+  getStates(countryId?: number): Observable<any[]> {
+    const q = countryId ? `?countryId=${countryId}` : '';
+    return this.http.get<any[]>(this.base + API.STATES + q);
+  }
+
+  getCities(stateId?: number): Observable<any[]> {
+    const q = stateId ? `?stateId=${stateId}` : '';
+    return this.http.get<any[]>(this.base + API.CITIES + q);
+  }
+
   getWorkLocations(): Observable<any[]> {
     return this.http.get<any[]>(this.base + API.WORK_LOCATIONS);
   }
 
   getRoles(): Observable<any[]> {
     return this.http.get<any[]>(this.base + API.ROLES);
+  }
+
+  provisionEmployee(body: any): Observable<any> {
+    return this.http.post(this.base + API.EMPLOYEES_PROVISION, body);
+  }
+
+  deleteEmployee(id: number): Observable<any> {
+    return this.http.delete(this.base + API.EMPLOYEES + '/' + id);
+  }
+
+  submitLeave(body: any): Observable<any> {
+    return this.http.post(this.base + API.ME_LEAVES_SUBMIT, body);
+  }
+
+  reviewLeave(id: number, body: any): Observable<any> {
+    return this.http.put(this.base + API.LEAVE_REQUESTS + '/' + id + '/review', body);
+  }
+
+  getMyAttendanceMonth(year?: number, month?: number): Observable<any> {
+    const params: string[] = [];
+    if (year) params.push(`year=${year}`);
+    if (month) params.push(`month=${month}`);
+    const q = params.length ? '?' + params.join('&') : '';
+    return this.http.get(this.base + API.ME_ATTENDANCE_MONTH + q);
+  }
+
+  seedIndiaHolidays(): Observable<any> {
+    return this.http.post(this.base + API.HOLIDAYS_SEED_INDIA, {});
+  }
+
+  getTrips(): Observable<any[]> {
+    return this.http.get<any[]>(this.base + API.TRIPS);
+  }
+
+  createTrip(body: any): Observable<any> {
+    return this.http.post(this.base + API.TRIPS, body);
+  }
+
+  payTrip(id: number, body: any): Observable<any> {
+    return this.http.post(this.base + API.TRIPS + '/' + id + '/pay', body);
   }
 
   getMyProfile(): Observable<any> {

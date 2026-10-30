@@ -4,13 +4,23 @@
       <img src="assets/employee360-mark.png" width="48" height="48" alt="" />
       <div>
         <p class="eyebrow">Employee 360</p>
-        <h1>Sign in</h1>
+        <h1>{{ otpStep ? 'Enter OTP' : 'Sign in' }}</h1>
       </div>
     </div>
 
-    <p class="login-panel__support">Use your employee code to open the portal.</p>
+    <p class="login-panel__support" *ngIf="!otpStep">
+      Use your employee code to open the portal.
+    </p>
+    <p class="login-panel__support" *ngIf="otpStep">
+      We sent a 6-digit code to {{ maskedEmail || 'your email' }}.
+    </p>
 
-    <form class="login-form" [formGroup]="userForm" (ngSubmit)="loginUser()" novalidate>
+    <form
+      class="login-form"
+      *ngIf="!otpStep"
+      [formGroup]="userForm"
+      (ngSubmit)="loginUser()"
+      novalidate>
       <div class="field">
         <label for="userName">Username</label>
         <input
@@ -45,6 +55,37 @@
 
       <button class="submit-btn" type="submit" [disabled]="loading">
         {{ loading ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+
+    <form
+      class="login-form"
+      *ngIf="otpStep"
+      [formGroup]="otpForm"
+      (ngSubmit)="verifyOtp()"
+      novalidate>
+      <div class="field">
+        <label for="otp">One-time password</label>
+        <input
+          id="otp"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          formControlName="otp"
+          placeholder="6-digit code"
+          autocomplete="one-time-code"
+          [class.is-invalid]="otpSubmitted && o['otp'].invalid" />
+        <small *ngIf="otpSubmitted && o['otp'].errors?.['required']">OTP is required.</small>
+        <small *ngIf="otpSubmitted && o['otp'].errors?.['pattern']">Enter the 6-digit code.</small>
+      </div>
+
+      <div class="form-alert" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+      <button class="submit-btn" type="submit" [disabled]="loading">
+        {{ loading ? 'Verifying…' : 'Verify OTP' }}
+      </button>
+      <button class="submit-btn" type="button" style="margin-top:0.75rem;background:transparent;border:1px solid currentColor;" (click)="backToPassword()" [disabled]="loading">
+        Back
       </button>
     </form>
 

@@ -1,18 +1,22 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Repository.Implementation;
-using Repository.Interface;
+using Models;
 using Serilog;
 using Services;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using Rest_Api.Custom_Middlewar;
 using Rest_Api.IpAddress;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Rest_Api.Filters;
+using Rest_Api.HangfireJobs;
+using Rest_Api.Infrastructure.Email;
+using Rest_Api.Infrastructure.Excel;
+using Rest_Api.Infrastructure.Otp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +76,30 @@ ConfigureDependency.RegisterService(builder.Services, builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IipAddress, IpAddress>();
 builder.Services.AddScoped<ExceptionFilter>();
+
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection(SmtpSettings.SectionName));
+builder.Services.Configure<OtpExpirationSettings>(builder.Configuration.GetSection(OtpExpirationSettings.SectionName));
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IOtpService, OtpService>();
+builder.Services.AddScoped<IExcelUserImportService, ExcelUserImportService>();
+
+var hangfireCs = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("DefaultConnection is not configured.");
+
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(hangfireCs, new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        DisableGlobalLocks = true
+    }));
+
+builder.Services.AddHangfireServer();
 
 //Rate Limiting Configuration
 builder.Services.AddRateLimiter(options =>
@@ -166,8 +194,26 @@ app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    // Dev-friendly; lock down for production.
+    Authorization = new[] { new Hangfire.Dashboard.LocalRequestsOnlyAuthorizationFilter() }
+});
+
 app.UseRateLimiter();
 
 app.MapControllers();
+
+// Recurring (Cron) → then Continuation
+// Cron: minute hour day-of-month month day-of-week  → "0 * * * *" = every hour at :00
+var cleanupCron = app.Configuration["Hangfire:RecurringCleanupCron"] ?? "0 * * * *";
+RecurringJob.AddOrUpdate<RecurringMaintenanceJob>(
+    "recurring-maintenance-cron",
+    job => job.Execute(),
+    cleanupCron,
+    new RecurringJobOptions
+    {
+        TimeZone = TimeZoneInfo.Local
+    });
 
 app.Run();

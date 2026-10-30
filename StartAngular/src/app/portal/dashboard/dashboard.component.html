@@ -1,7 +1,7 @@
 <div class="page-head">
   <div>
     <h2>Dashboard</h2>
-    <p>Live snapshot across people, leave, attendance, and holidays.</p>
+    <p>Live snapshot across people, leave, attendance, holidays, and trips.</p>
   </div>
 </div>
 
@@ -14,4 +14,8 @@
   <div class="card"><span>Pending adjustments</span><strong>{{ summary.pendingAdjustments }}</strong></div>
   <div class="card"><span>Holidays this year</span><strong>{{ summary.holidaysThisYear }}</strong></div>
   <div class="card"><span>Present today</span><strong>{{ summary.presentToday }}</strong></div>
+  <div class="card"><span>Present days ({{ summary.month?.label }})</span><strong>{{ summary.presentDaysThisMonth }}</strong></div>
+  <div class="card"><span>Leave days (month)</span><strong>{{ summary.leaveDaysThisMonth }}</strong></div>
+  <div class="card"><span>Absent days (month)</span><strong>{{ summary.absentDaysThisMonth }}</strong></div>
+  <div class="card"><span>Active trips</span><strong>{{ summary.activeTrips }}</strong></div>
 </div>

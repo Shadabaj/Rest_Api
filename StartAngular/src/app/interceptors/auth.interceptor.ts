@@ -81,6 +81,7 @@ export class AuthInterceptor implements HttpInterceptor {
     const lower = url.toLowerCase();
     return (
       lower.includes('login/validate') ||
+      lower.includes('login/verify-otp') ||
       lower.includes('login/refresh') ||
       lower.includes('login/logout')
     );

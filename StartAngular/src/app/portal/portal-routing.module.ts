@@ -18,6 +18,7 @@ import { RolesComponent } from './roles/roles.component';
 import { MeHomeComponent } from './me/me-home.component';
 import { MeAttendanceComponent } from './me/me-attendance.component';
 import { MeLeaveComponent } from './me/me-leave.component';
+import { TripsComponent } from './trips/trips.component';
 import { PortalHomeRedirectComponent } from './portal-home-redirect.component';
 
 const routes: Routes = [
@@ -51,6 +52,12 @@ const routes: Routes = [
         component: MeLeaveComponent,
         canActivate: [RoleGuard],
         data: { roles: [Roles.Employee] }
+      },
+      {
+        path: 'trips',
+        component: TripsComponent,
+        canActivate: [RoleGuard],
+        data: { roles: [Roles.Admin, Roles.HR, Roles.Manager, Roles.Employee] }
       },
       {
         path: 'holidays',

@@ -29,7 +29,13 @@ namespace Services.Implementation
 
         public EmployeeLogin? ValidateUser(string email, string password, string? ipAddress = null)
         {
-            var user = _userRepo.ValidateUser(email, password);
+            // Credentials only — JWT is issued after OTP verification.
+            return _userRepo.ValidateUser(email, password);
+        }
+
+        public EmployeeLogin? IssueTokensForUser(int userId, string? ipAddress = null)
+        {
+            var user = _userRepo.GetActiveUserById(userId);
             if (user == null)
                 return null;
 

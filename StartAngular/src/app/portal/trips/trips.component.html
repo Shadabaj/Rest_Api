@@ -1,0 +1,50 @@
+<div class="page-head">
+  <div>
+    <h2>Trips &amp; pay</h2>
+    <p>Company trip plans — login and contribute your share.</p>
+  </div>
+</div>
+
+<p class="error" *ngIf="error">{{ error }}</p>
+<p class="success" *ngIf="success">{{ success }}</p>
+
+<div class="panel form-panel" *ngIf="canCreate">
+  <h3>Create trip plan</h3>
+  <div class="grid-form">
+    <label>Title <input [(ngModel)]="newTrip.title" /></label>
+    <label>Target amount <input type="number" [(ngModel)]="newTrip.targetAmount" /></label>
+    <label>Start <input type="date" [(ngModel)]="newTrip.startDate" /></label>
+    <label>End <input type="date" [(ngModel)]="newTrip.endDate" /></label>
+    <label class="full">Description <input [(ngModel)]="newTrip.description" /></label>
+  </div>
+  <div class="form-actions">
+    <button type="button" class="btn" (click)="create()">Create trip</button>
+  </div>
+</div>
+
+<div class="panel">
+  <table>
+    <thead>
+      <tr>
+        <th>Trip</th><th>Dates</th><th>Target</th><th>Collected</th><th>Remaining</th><th>Pay</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of trips">
+        <td>
+          <strong>{{ t.title }}</strong>
+          <div class="muted">{{ t.description || '' }}</div>
+        </td>
+        <td>{{ t.startDate }} → {{ t.endDate }}</td>
+        <td>₹{{ t.targetAmount }}</td>
+        <td>₹{{ t.collectedAmount }}</td>
+        <td>₹{{ t.remaining }}</td>
+        <td class="pay-cell">
+          <input type="number" [(ngModel)]="payAmount[t.tripPlanId]" placeholder="Amount" />
+          <button type="button" class="btn" (click)="pay(t)">Pay</button>
+        </td>
+      </tr>
+      <tr *ngIf="!trips.length"><td colspan="6" class="muted">No active trip plans.</td></tr>
+    </tbody>
+  </table>
+</div>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Rest_Api.IpAddress;
+using Rest_Api.Infrastructure.Otp;
 using Services.Interface;
 
 namespace Rest_Api.Controllers
@@ -11,12 +12,18 @@ namespace Rest_Api.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IOtpService _otpService;
         private readonly ILogger<LoginController> _logger;
         private readonly IipAddress _ipAddress;
 
-        public LoginController(IUserService userService, ILogger<LoginController> logger, IipAddress ipAddress)
+        public LoginController(
+            IUserService userService,
+            IOtpService otpService,
+            ILogger<LoginController> logger,
+            IipAddress ipAddress)
         {
             _userService = userService;
+            _otpService = otpService;
             _logger = logger;
             _ipAddress = ipAddress;
         }
@@ -73,9 +80,12 @@ namespace Rest_Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Step 1: validate password, then Enqueue OTP email (Hangfire Now). Tokens are not returned yet.
+        /// </summary>
         [HttpPost("validate")]
         [AllowAnonymous]
-        public ActionResult<EmployeeLogin> ValidateUser([FromBody] LoginModel login)
+        public async Task<ActionResult> ValidateUser([FromBody] LoginModel login)
         {
             _logger.LogInformation("ValidateUser started {@Context}", new { Action = "ValidateUser", UserName = login.UserName });
 
@@ -87,21 +97,51 @@ namespace Rest_Api.Controllers
 
             try
             {
-                var result = _userService.ValidateUser(login.UserName, login.Password, _ipAddress.GetIpAddress());
-                if (result == null)
+                var user = _userService.ValidateUser(login.UserName, login.Password, _ipAddress.GetIpAddress());
+                if (user == null)
                 {
                     _logger.LogWarning("ValidateUser unauthorized {@Context}", new { Action = "ValidateUser", UserName = login.UserName });
                     return Unauthorized(new { message = "Invalid UserName or password." });
                 }
 
-                _logger.LogInformation("ValidateUser succeeded {@Context}", new { Action = "ValidateUser", UserName = login.UserName, EmployeeId = result.EmployeeId });
-                return Ok(result);
+                var otpPending = await _otpService.CreateAndQueueOtpAsync(login.UserName, _ipAddress.GetIpAddress());
+                if (otpPending == null)
+                    return Unauthorized(new { message = "Unable to start OTP challenge." });
+
+                _logger.LogInformation(
+                    "ValidateUser OTP queued {@Context}",
+                    new { Action = "ValidateUser", UserName = login.UserName, EmployeeId = user.EmployeeId });
+
+                return Ok(otpPending);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ValidateUser failed {@Context}", new { Action = "ValidateUser", UserName = login.UserName });
                 throw;
             }
+        }
+
+        /// <summary>Step 2: verify email OTP and issue JWT + refresh token.</summary>
+        [HttpPost("verify-otp")]
+        [AllowAnonymous]
+        public async Task<ActionResult<EmployeeLogin>> VerifyOtp([FromBody] VerifyOtpRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _otpService.VerifyOtpAndIssueTokensAsync(
+                request.UserName,
+                request.Otp,
+                _ipAddress.GetIpAddress());
+
+            if (result == null)
+                return Unauthorized(new { message = "Invalid or expired OTP." });
+
+            return Ok(result);
         }
 
         [HttpPost("refresh")]
@@ -136,19 +176,10 @@ namespace Rest_Api.Controllers
         [AllowAnonymous]
         public ActionResult Logout([FromBody] RefreshTokenRequest request)
         {
-            //_logger.LogInformation("Logout started {@Context}", new { Action = "Logout" });
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var revoked = _userService.RevokeRefreshToken(request.RefreshToken);
-            if (!revoked)
-            {
-               // _logger.LogWarning("Logout token not found {@Context}", new { Action = "Logout" });
-                return Ok(new { message = "Logged out." });
-            }
-
-            //_logger.LogInformation("Logout succeeded {@Context}", new { Action = "Logout" });
+            _userService.RevokeRefreshToken(request.RefreshToken);
             return Ok(new { message = "Logged out." });
         }
     }

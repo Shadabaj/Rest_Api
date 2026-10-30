@@ -1,20 +1,97 @@
-<div class="page-head"><div><h2>Employees</h2><p>Active employee master records.</p></div></div>
+<div class="page-head">
+  <div>
+    <h2>Employees</h2>
+    <p>Create users with role and location. Soft-delete deactivates login.</p>
+  </div>
+  <button type="button" class="btn" (click)="openForm()">+ Add employee</button>
+</div>
+
 <p class="error" *ngIf="error">{{ error }}</p>
+<p class="success" *ngIf="success">{{ success }}</p>
+
+<div class="panel form-panel" *ngIf="showForm">
+  <h3>New employee + login</h3>
+  <div class="grid-form">
+    <label>First name <input [(ngModel)]="form.firstName" /></label>
+    <label>Last name <input [(ngModel)]="form.lastName" /></label>
+    <label>Email <input type="email" [(ngModel)]="form.emailAddress" /></label>
+    <label>Mobile <input [(ngModel)]="form.mobileNumber" /></label>
+    <label>Password <input type="text" [(ngModel)]="form.password" /></label>
+    <label>Role
+      <select [(ngModel)]="form.roleId">
+        <option [ngValue]="null">Select role</option>
+        <option *ngFor="let r of roles" [ngValue]="r.id">{{ r.name }}</option>
+      </select>
+    </label>
+    <label>Country
+      <select [(ngModel)]="form.countryId" (ngModelChange)="onCountryChange()">
+        <option [ngValue]="null">Select country</option>
+        <option *ngFor="let c of countries" [ngValue]="c.rowId || c.id">{{ c.countryName || c.name }}</option>
+      </select>
+    </label>
+    <label>State
+      <select [(ngModel)]="form.stateId" (ngModelChange)="onStateChange()">
+        <option [ngValue]="null">Select state</option>
+        <option *ngFor="let s of states" [ngValue]="s.rowId || s.id">{{ s.stateName || s.name }}</option>
+      </select>
+    </label>
+    <label>City
+      <select [(ngModel)]="form.cityId">
+        <option [ngValue]="null">Select city</option>
+        <option *ngFor="let c of cities" [ngValue]="c.rowId || c.id">{{ c.cityName || c.name }}</option>
+      </select>
+    </label>
+    <label>Department
+      <select [(ngModel)]="form.departmentId">
+        <option [ngValue]="null">Optional</option>
+        <option *ngFor="let d of departments" [ngValue]="d.departmentId || d.id">{{ d.departmentName || d.name }}</option>
+      </select>
+    </label>
+    <label>Designation
+      <select [(ngModel)]="form.designationId">
+        <option [ngValue]="null">Optional</option>
+        <option *ngFor="let d of designations" [ngValue]="d.designationId || d.id">{{ d.designationName || d.name }}</option>
+      </select>
+    </label>
+    <label>Work location
+      <select [(ngModel)]="form.workLocationId">
+        <option [ngValue]="null">Optional</option>
+        <option *ngFor="let w of workLocations" [ngValue]="w.workLocationId || w.id">{{ w.locationName || w.name }}</option>
+      </select>
+    </label>
+    <label>Reporting manager
+      <select [(ngModel)]="form.reportingManagerId">
+        <option [ngValue]="null">Optional</option>
+        <option *ngFor="let m of managers" [ngValue]="m.rowId">{{ m.employeeCode }} — {{ m.firstName }} {{ m.lastName }}</option>
+      </select>
+    </label>
+    <label>Date of birth <input type="date" [(ngModel)]="form.dateOfBirth" /></label>
+    <label>Date of joining <input type="date" [(ngModel)]="form.dateOfJoinee" /></label>
+  </div>
+  <div class="form-actions">
+    <button type="button" class="btn" (click)="save()" [disabled]="saving">{{ saving ? 'Saving…' : 'Create' }}</button>
+    <button type="button" class="btn ghost" (click)="showForm = false">Cancel</button>
+  </div>
+</div>
+
 <div class="panel">
   <table>
     <thead>
-      <tr><th>Code</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th><th>Status</th></tr>
+      <tr>
+        <th>Code</th><th>Name</th><th>Email</th><th>Location</th><th>Department</th><th>Status</th><th></th>
+      </tr>
     </thead>
     <tbody>
       <tr *ngFor="let row of rows">
         <td>{{ row.employeeCode }}</td>
         <td>{{ row.firstName }} {{ row.lastName }}</td>
         <td>{{ row.emailAddress }}</td>
+        <td>{{ row.cityName || row.stateName || row.countryName || '—' }}</td>
         <td>{{ row.departmentName || '—' }}</td>
-        <td>{{ row.designationName || '—' }}</td>
         <td><span class="badge">{{ row.isActive ? 'Active' : 'Inactive' }}</span></td>
+        <td><button type="button" class="linkish" (click)="remove(row)">Delete</button></td>
       </tr>
-      <tr *ngIf="!rows.length"><td colspan="6" class="muted">No employees found.</td></tr>
+      <tr *ngIf="!rows.length"><td colspan="7" class="muted">No employees found.</td></tr>
     </tbody>
   </table>
 </div>

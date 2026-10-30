@@ -1,8 +1,10 @@
 using DAL;
 using DAL.Entity;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Rest_Api.HangfireJobs;
 
 namespace Rest_Api.Controllers;
 
@@ -12,7 +14,12 @@ namespace Rest_Api.Controllers;
 public class LeaveRequestsController : ControllerBase
 {
     private readonly AppDbContext _db;
-    public LeaveRequestsController(AppDbContext db) => _db = db;
+    private readonly IBackgroundJobClient _jobs;
+    public LeaveRequestsController(AppDbContext db, IBackgroundJobClient jobs)
+    {
+        _db = db;
+        _jobs = jobs;
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<object>>> GetAll([FromQuery] string? status = null)
@@ -60,8 +67,19 @@ public class LeaveRequestsController : ControllerBase
         model.LeaveRequestId = 0;
         model.RequestStatus = string.IsNullOrWhiteSpace(model.RequestStatus) ? "PENDING" : model.RequestStatus;
         model.RequestedAt = DateTime.UtcNow;
+        if (model.RequestedDays <= 0)
+        {
+            model.RequestedDays = model.IsHalfDay
+                ? 0.5m
+                : Math.Max(1, model.EndDate.DayNumber - model.StartDate.DayNumber + 1);
+        }
+
         _db.LeaveRequests.Add(model);
         await _db.SaveChangesAsync();
+
+        // Enqueue = Now — notify reporting manager by email
+        _jobs.Enqueue<NotifyManagerLeaveJob>(j => j.Execute(model.LeaveRequestId));
+
         return CreatedAtAction(nameof(Get), new { id = model.LeaveRequestId }, model);
     }
 

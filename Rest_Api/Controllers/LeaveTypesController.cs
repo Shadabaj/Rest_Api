@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Rest_Api.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,HR")]
+[Authorize(Roles = "Admin,HR,Manager,Employee")]
 [Route("api/[controller]")]
 public class LeaveTypesController : ControllerBase
 {
@@ -26,6 +26,7 @@ public class LeaveTypesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<ActionResult<LeaveType>> Create([FromBody] LeaveType model)
     {
         model.LeaveTypeId = 0;
@@ -35,6 +36,7 @@ public class LeaveTypesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> Update(int id, [FromBody] LeaveType model)
     {
         if (id != model.LeaveTypeId) return BadRequest();
@@ -44,6 +46,7 @@ public class LeaveTypesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> Delete(int id)
     {
         var item = await _db.LeaveTypes.FindAsync(id);

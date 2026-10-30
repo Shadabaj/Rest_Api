@@ -95,3 +95,92 @@ th {
   color: #9b1c1c;
   font-weight: 600;
 }
+
+.success {
+  color: #0f6b5c;
+  font-weight: 600;
+}
+
+.btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.55rem 0.95rem;
+  background: var(--teal-deep, #0f6b5c);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--teal-deep, #0f6b5c);
+  border: 1px solid currentColor;
+}
+
+.form-panel {
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.form-panel h3 {
+  margin: 0 0 0.85rem;
+}
+
+.grid-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.grid-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.grid-form label.full {
+  grid-column: 1 / -1;
+}
+
+.grid-form label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grid-form input,
+.grid-form select {
+  border: 1px solid var(--line, #d7e0e6);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.linkish {
+  border: 0;
+  background: transparent;
+  color: #9b1c1c;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pay-cell {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.pay-cell input {
+  width: 6rem;
+  border: 1px solid var(--line, #d7e0e6);
+  border-radius: 8px;
+  padding: 0.35rem 0.45rem;
+}

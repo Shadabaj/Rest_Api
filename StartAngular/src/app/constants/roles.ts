@@ -42,6 +42,7 @@ export const PORTAL_NAV: NavItem[] = [
   { label: 'My workspace', path: '/portal/me', roles: [Roles.Employee], exact: true },
   { label: 'My attendance', path: '/portal/me/attendance', roles: [Roles.Employee] },
   { label: 'My leave', path: '/portal/me/leave', roles: [Roles.Employee] },
+  { label: 'Trips & pay', path: '/portal/trips', roles: [Roles.Admin, Roles.HR, Roles.Manager, Roles.Employee] },
   { label: 'Holidays', path: '/portal/holidays', roles: [Roles.Admin, Roles.HR, Roles.Manager, Roles.Employee] },
   { label: 'Employees', path: '/portal/employees', roles: [Roles.Admin, Roles.HR] },
   { label: 'Departments', path: '/portal/departments', roles: [Roles.Admin, Roles.HR] },

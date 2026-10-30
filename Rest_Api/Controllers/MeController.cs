@@ -1,9 +1,12 @@
 using System.Security.Claims;
 using DAL;
 using DAL.Entity;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models;
+using Rest_Api.HangfireJobs;
 
 namespace Rest_Api.Controllers;
 
@@ -13,8 +16,13 @@ namespace Rest_Api.Controllers;
 public class MeController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IBackgroundJobClient _jobs;
 
-    public MeController(AppDbContext db) => _db = db;
+    public MeController(AppDbContext db, IBackgroundJobClient jobs)
+    {
+        _db = db;
+        _jobs = jobs;
+    }
 
     private int? GetEmployeeId()
     {
@@ -127,6 +135,92 @@ public class MeController : ControllerBase
             .ToListAsync();
 
         return Ok(items);
+    }
+
+    [HttpPost("leaves")]
+    public async Task<ActionResult<object>> SubmitLeave([FromBody] SubmitLeaveRequest request)
+    {
+        var employeeId = GetEmployeeId();
+        if (employeeId == null) return Unauthorized(new { message = "Employee claim missing." });
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var start = DateOnly.FromDateTime(request.StartDate);
+        var end = DateOnly.FromDateTime(request.EndDate);
+        if (end < start) return BadRequest(new { message = "End date must be on or after start date." });
+
+        var leaveType = await _db.LeaveTypes.FirstOrDefaultAsync(t => t.LeaveTypeId == request.LeaveTypeId && t.IsActive);
+        if (leaveType == null) return BadRequest(new { message = "Invalid leave type." });
+
+        var days = request.IsHalfDay
+            ? 0.5m
+            : Math.Max(1, end.DayNumber - start.DayNumber + 1);
+
+        var model = new LeaveRequest
+        {
+            EmployeeId = employeeId.Value,
+            LeaveTypeId = request.LeaveTypeId,
+            StartDate = start,
+            EndDate = end,
+            RequestedDays = days,
+            IsHalfDay = request.IsHalfDay,
+            HalfDayPart = request.HalfDayPart,
+            Reason = request.Reason,
+            RequestStatus = "PENDING",
+            RequestedAt = DateTime.UtcNow
+        };
+
+        _db.LeaveRequests.Add(model);
+        await _db.SaveChangesAsync();
+
+        _jobs.Enqueue<NotifyManagerLeaveJob>(j => j.Execute(model.LeaveRequestId));
+
+        return Ok(new
+        {
+            message = "Leave submitted. Your manager will be notified by email.",
+            model.LeaveRequestId,
+            model.RequestedDays,
+            model.RequestStatus
+        });
+    }
+
+    [HttpGet("attendance/month")]
+    public async Task<ActionResult<object>> MyAttendanceMonth([FromQuery] int? year = null, [FromQuery] int? month = null)
+    {
+        var employeeId = GetEmployeeId();
+        if (employeeId == null) return Unauthorized(new { message = "Employee claim missing." });
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var y = year ?? today.Year;
+        var m = month ?? today.Month;
+        var start = new DateOnly(y, m, 1);
+        var end = start.AddMonths(1).AddDays(-1);
+
+        var rows = await _db.AttendanceDailies.AsNoTracking()
+            .Where(a => a.EmployeeId == employeeId && a.AttendanceDate >= start && a.AttendanceDate <= end)
+            .OrderBy(a => a.AttendanceDate)
+            .Select(a => new
+            {
+                date = a.AttendanceDate.ToString("yyyy-MM-dd"),
+                a.AttendanceStatus,
+                a.TotalWorkedMinutes
+            })
+            .ToListAsync();
+
+        var presentDays = rows.Count(r =>
+            r.AttendanceStatus != null &&
+            (r.AttendanceStatus.Equals("PRESENT", StringComparison.OrdinalIgnoreCase)
+             || r.AttendanceStatus.Equals("Present", StringComparison.OrdinalIgnoreCase)
+             || r.AttendanceStatus.Equals("WFH", StringComparison.OrdinalIgnoreCase)));
+
+        return Ok(new
+        {
+            year = y,
+            month = m,
+            label = start.ToString("MMMM yyyy"),
+            presentDays,
+            totalRecords = rows.Count,
+            days = rows
+        });
     }
 
     [HttpGet("clock-status")]

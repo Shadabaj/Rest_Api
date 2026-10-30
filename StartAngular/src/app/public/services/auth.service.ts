@@ -4,6 +4,14 @@ import { Observable, throwError, tap } from 'rxjs';
 import { LoginModel } from '../../Models/LoginModel';
 import { UserModel } from '../../Models/UserModel';
 import { TokenResponse } from '../../Models/TokenResponse';
+
+export interface LoginOtpPendingResponse {
+  requiresOtp: boolean;
+  userName: string;
+  maskedEmail: string;
+  message: string;
+  expiresInMinutes: number;
+}
 import { Environment } from '../../../Environment/Enviroment';
 import { API } from '../../Urls/API';
 import {
@@ -29,16 +37,26 @@ export class AuthService {
     this.rawHttp = new HttpClient(httpBackend);
   }
 
-  ValidateUser(user: LoginModel): Observable<HttpResponse<UserModel>> {
+  /** Step 1: password check → server enqueues OTP email (no JWT yet). */
+  ValidateUser(user: LoginModel): Observable<HttpResponse<LoginOtpPendingResponse>> {
     const body = {
       userName: user.userName,
       password: user.password
     };
 
-    return this.httpClient.post<UserModel>(Environment.apiUrl + API.LOGIN, body, {
+    return this.httpClient.post<LoginOtpPendingResponse>(Environment.apiUrl + API.LOGIN, body, {
       headers: this.httpheaders,
       observe: 'response'
     });
+  }
+
+  /** Step 2: verify OTP → JWT + refresh token. */
+  VerifyOtp(userName: string, otp: string): Observable<HttpResponse<UserModel>> {
+    return this.httpClient.post<UserModel>(
+      Environment.apiUrl + API.VERIFY_OTP,
+      { userName, otp },
+      { headers: this.httpheaders, observe: 'response' }
+    );
   }
 
   /** Exchange refresh token for a new access + refresh pair (rotation). */

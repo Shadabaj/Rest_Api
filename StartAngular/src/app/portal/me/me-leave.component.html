@@ -1,15 +1,47 @@
-<div class="page-head"><div><h2>My leave</h2><p>Your leave requests and status.</p></div></div>
+<div class="page-head">
+  <div>
+    <h2>My leave</h2>
+    <p>Apply for leave — your reporting manager is emailed automatically.</p>
+  </div>
+</div>
+
 <p class="error" *ngIf="error">{{ error }}</p>
-<div class="panel"><table>
-<thead><tr><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th></tr></thead>
-<tbody>
-<tr *ngFor="let row of rows">
-  <td>{{ row.leaveTypeName }}</td>
-  <td>{{ row.startDate }}</td>
-  <td>{{ row.endDate }}</td>
-  <td>{{ row.requestedDays }}</td>
-  <td>{{ row.reason || '—' }}</td>
-  <td><span class="badge">{{ row.requestStatus }}</span></td>
-</tr>
-<tr *ngIf="!rows.length"><td colspan="6" class="muted">No leave requests yet.</td></tr>
-</tbody></table></div>
+<p class="success" *ngIf="success">{{ success }}</p>
+
+<div class="panel form-panel">
+  <h3>New leave request</h3>
+  <div class="grid-form">
+    <label>Leave type
+      <select [(ngModel)]="form.leaveTypeId">
+        <option [ngValue]="null">Select</option>
+        <option *ngFor="let t of leaveTypes" [ngValue]="t.leaveTypeId || t.id">{{ t.leaveName || t.name }}</option>
+      </select>
+    </label>
+    <label>From <input type="date" [(ngModel)]="form.startDate" /></label>
+    <label>To <input type="date" [(ngModel)]="form.endDate" /></label>
+    <label class="check"><input type="checkbox" [(ngModel)]="form.isHalfDay" /> Half day</label>
+    <label class="full">Reason <input [(ngModel)]="form.reason" /></label>
+  </div>
+  <div class="form-actions">
+    <button type="button" class="btn" (click)="submit()" [disabled]="saving">{{ saving ? 'Submitting…' : 'Submit leave' }}</button>
+  </div>
+</div>
+
+<div class="panel">
+  <table>
+    <thead>
+      <tr><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows">
+        <td>{{ row.leaveTypeName }}</td>
+        <td>{{ row.startDate }}</td>
+        <td>{{ row.endDate }}</td>
+        <td>{{ row.requestedDays }}</td>
+        <td>{{ row.reason || '—' }}</td>
+        <td><span class="badge">{{ row.requestStatus }}</span></td>
+      </tr>
+      <tr *ngIf="!rows.length"><td colspan="6" class="muted">No leave requests yet.</td></tr>
+    </tbody>
+  </table>
+</div>

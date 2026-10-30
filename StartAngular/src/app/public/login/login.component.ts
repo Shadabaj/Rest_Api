@@ -5,7 +5,6 @@ import { AuthService } from '../services/auth.service';
 import { LoginModel } from '../../Models/LoginModel';
 import { UserModel } from '../../Models/UserModel';
 import { ROLE_HOME_PATH, getPrimaryRole } from '../../constants/roles';
-import { exhaustMap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -14,10 +13,15 @@ import { exhaustMap } from 'rxjs';
 })
 export class LoginComponent implements OnInit {
   userForm: FormGroup;
+  otpForm: FormGroup;
   returnUrl = '';
   submitted = false;
+  otpSubmitted = false;
   loading = false;
   errorMessage = '';
+  otpStep = false;
+  maskedEmail = '';
+  pendingUserName = '';
 
   constructor(
     private fb: FormBuilder,
@@ -35,6 +39,10 @@ export class LoginComponent implements OnInit {
         ]
       ]
     });
+
+    this.otpForm = this.fb.group({
+      otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
+    });
   }
 
   ngOnInit(): void {
@@ -43,6 +51,10 @@ export class LoginComponent implements OnInit {
 
   get f() {
     return this.userForm.controls;
+  }
+
+  get o() {
+    return this.otpForm.controls;
   }
 
   loginUser(): void {
@@ -62,8 +74,42 @@ export class LoginComponent implements OnInit {
     this.authService.ValidateUser(payload).subscribe({
       next: (response) => {
         this.loading = false;
+        const body = response.body;
+        if (!body?.requiresOtp) {
+          this.errorMessage = 'Unexpected login response.';
+          return;
+        }
+
+        this.otpStep = true;
+        this.pendingUserName = body.userName || payload.userName;
+        this.maskedEmail = body.maskedEmail || '';
+        this.errorMessage = '';
+      },
+      error: (error) => {
+        this.loading = false;
+        this.errorMessage =
+          error?.error?.message ||
+          (error?.status === 401
+            ? 'Invalid username or password.'
+            : 'Unable to sign in. Please try again.');
+      }
+    });
+  }
+
+  verifyOtp(): void {
+    this.otpSubmitted = true;
+    this.errorMessage = '';
+
+    if (this.otpForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
+    this.authService.VerifyOtp(this.pendingUserName, this.otpForm.value.otp).subscribe({
+      next: (response) => {
+        this.loading = false;
         if (!response.body) {
-          this.errorMessage = 'Login succeeded but no user data was returned.';
+          this.errorMessage = 'OTP accepted but no user data was returned.';
           return;
         }
 
@@ -85,10 +131,15 @@ export class LoginComponent implements OnInit {
         this.loading = false;
         this.errorMessage =
           error?.error?.message ||
-          (error?.status === 401
-            ? 'Invalid username or password.'
-            : 'Unable to sign in. Please try again.');
+          (error?.status === 401 ? 'Invalid or expired OTP.' : 'Unable to verify OTP.');
       }
     });
+  }
+
+  backToPassword(): void {
+    this.otpStep = false;
+    this.otpForm.reset();
+    this.otpSubmitted = false;
+    this.errorMessage = '';
   }
 }
